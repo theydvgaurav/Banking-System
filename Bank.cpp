@@ -7,32 +7,56 @@ class Account{
         double amount;
         string password;
     public : 
+        int number;
         string name;
-        Account *number , *next;
+        Account *next;
 
-        Account(double x, string nm, string pwd ){
-            number = this;
+        Account(int y , double x, string nm, string pwd ){
+            number = y;
             name = nm;
             amount  = x;
             password = pwd;
             next = NULL;
         }
 
-        void Update_name(string enteredname){
+        void Update_name(){
+            cout << "Enter New Name : ";
+            string enteredname;
+            cin >> enteredname;
             name = enteredname;
         }
 
-        void Update_password(string enteredpassword){
+        string passwd(){
+            string pwd = password;
+            return pwd;
+        }
+
+        void Update_password(){
+            cout << "Enter New Password : ";
+            string enteredpassword;
+            cin >> enteredpassword;
             password = enteredpassword;
+            cout << "Password Updated" << endl;
         }
 
-        void Withdraw(double money){
-             if(amount>=money)
+        void Withdraw(){
+            cout << "Enter Amount : ";
+            double money;
+            cin >> money;
+            if(amount>=money){
                 amount = amount - money;
+                cout << "Withdrawal Successful" << endl;
+        }
+            view_bal();
         }
 
-        void Deposit(double money){
-                amount = amount + money;
+        void Deposit(){
+            cout << "Enter Amount : ";
+            double money;
+            cin >> money;
+            amount = amount + money;
+            cout << "Credit Successful" << endl;
+            view_bal();
         }
 
         void view(void){
@@ -40,6 +64,10 @@ class Account{
             cout << "Account Holder : " << name << endl;
             cout << "Balance : " << amount << endl; 
             cout << "Password : " << password << endl; 
+
+        }
+        void view_bal(void){
+            cout << "Balance : " << amount << endl; 
 
         }
 };
@@ -53,13 +81,58 @@ long long int stringHashing(string s)
   
 }
 
-
-void RegisteredUserMenu(){
-    cout << "**********************MENU**********************" << endl;
+void reguser(vector<Account> &Accounts,int i){
+    system("clear");
+    int option;
     cout << "1.Check Balance" << endl;
     cout << "2.Deposit" << endl;
     cout << "3.Withdraw" << endl;
-    cout << "4.Exit" << endl;
+    cout << "4.Update Name" << endl;
+    cout << "5.Update Password" << endl;
+    cout << "6.View All Details" << endl;
+    cout << "7.Exit" << endl;
+        cin >> option;
+        switch(option){
+            case 1 : Accounts[i].view_bal();
+                     break;
+            case 2 : Accounts[i].Deposit();
+                     break;
+            case 3 : Accounts[i].Withdraw();
+                     break;
+            case 4 : Accounts[i].Update_name();
+                     break;
+            case 5 : Accounts[i].Update_password();
+                     break;
+            case 6 : Accounts[i].view();
+                     break;
+            case 7 : break;
+        }
+}
+
+
+void RegisteredUserMenu(vector<Account> &Accounts){
+    int x;
+    string pwd;
+    system("clear");
+    cout << "**********************MENU**********************" << endl;
+    cout << "Enter Your Account Number : " << endl;
+    cin >> x;
+    
+    for(int i = 0; i<Accounts.size();i++){
+        if(Accounts[i].number==x){
+            cout << "Enter Your Password : " << endl;
+            cin >> pwd;
+            while(!(Accounts[i].number==x && Accounts[i].passwd() == pwd)){
+                cout << "Wrong Password, try again : "<< endl;
+                cin >> pwd;
+            }
+            cout << "*********Welcome " << Accounts[i].name << " *********" << endl;
+            reguser(Accounts,i);
+            break;
+            }    
+         
+    }
+    cout << "Account Doesn't Exist" << endl;
 
 }
 
@@ -71,12 +144,52 @@ void MainMenu(){
 
 }
 
-void create_user( vector<Account> &Accounts,double amount, string nm, string pwd){
-       Accounts.push_back(Account(amount , nm, pwd));
+void create_user( vector<Account> &Accounts,int num , double amount, string nm, string pwd){
+       Accounts.push_back(Account(num, amount , nm, pwd));
 
 }
 
+void newuser(vector<Account> &Accounts){
+    system("clear");
+    int num;
+    double amount;
+    string nm , pwd;
+    cout << "**********************Account Creation**********************" << endl;
+    cout << "Enter Account Holder's Name : " << endl;
+    cin >> nm;
+    cout << "Enter any 5-digit Account Number : " << endl;
+    cin >> num;
+    while(!(num/10000 >0 && num/10000<10)){
+        cout << num/1000 << endl;
+        cout << "Account Number isn't of 5 digits, Please Choose Another One : " << endl;
+        cin >> num;
+    }
+    for(auto it : Accounts){
+        if(it.number == num){
+            cout << "This Account Number Already Exists, Please Choose Another One : " << endl;
+            cin >> num;
+            while(!(num/10000 >0 && num/10000<10)){
+                cout << "Account Number isn't of 5 digits, Please Choose Another One : " << endl;
+                cin >> num; }
+            it = Accounts.front();
+        }
+        
+    }
+    cout << "Enter Account opening Amount : " << endl;
+    cin >> amount;
+    cout << "Enter Password for Account: " << endl;
+    cin >> pwd;
+    
+    
+    create_user(Accounts, num ,amount, nm, pwd);
+
+}
+
+
+
+
 void UserMenu(vector<Account> &Accounts){
+    system("clear");
     int option;
     cout << "**********************MENU**********************" << endl;
     cout << "1.Create Account" << endl;
@@ -86,28 +199,17 @@ void UserMenu(vector<Account> &Accounts){
         switch(option){
             case 1 : newuser(Accounts);
                      break;
-            case 2 : RegisteredUserMenu();
+            case 2 : RegisteredUserMenu(Accounts);
                      break;
             case 3 : break;
         }
 
 }
 
-void newuser(vector<Account> &Accounts){
-    double amount;
-    string nm , pwd;
-    cout << "**********************Account Creation**********************" << endl;
-    cout << "Enter Account Holder's Name : " << endl;
-    getline(cin,nm);
-    cout << "Enter Account opening Amount : " << endl;
-    cin >> amount;
-    cout << "Enter Password for Account: " << endl;
-    getline(cin,pwd);
-    create_user(Accounts,amount, nm, pwd);
 
-}
 
 void admin(vector<Account> &Accounts){
+    system("clear");
     string pwd;
     int limit = 3;
     bool checkout = false; 
@@ -147,11 +249,10 @@ int main()
 {   
 
    vector<Account> Accounts;
-   Accounts.push_back(Account(600,"Gaurav Yadav", "Arman@13"));
  
     int option;
-   
-        MainMenu();
+        do{
+            MainMenu();
         cin >> option;
         switch(option){
             case 1 : admin(Accounts);
@@ -159,7 +260,9 @@ int main()
             case 2 : UserMenu(Accounts);
                      break;
         }
-    
+        }while(option);
+        
+
 
     return 0;
 }
